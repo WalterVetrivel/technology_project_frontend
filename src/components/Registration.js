@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import {Form, Button, Input, Row, Col, DatePicker} from 'antd';
-import moment from 'moment';
 import axios from 'axios';
 
 class Registration extends Component {
 	state = {
 		firstName: '',
 		lastName: '',
-		dateOfBirth: moment(new Date(), 'YYYY - MM - DD'),
+		dateOfBirth: null,
 		email: '',
 		location: ''
 	};
@@ -56,9 +55,12 @@ class Registration extends Component {
 				password: "${this.state.password}"
 				location: "${this.state.location}"
 			}) {
-				id
-				firstName
-				lastName
+				user {
+					id
+					firstName
+					lastName
+				}
+				token
 			}
 		}`;
 		const result = await axios({
