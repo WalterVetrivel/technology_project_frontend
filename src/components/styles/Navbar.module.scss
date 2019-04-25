@@ -8,7 +8,10 @@
 	z-index: 100;
 }
 
-.navbarNav {
-    display: flex;
-    list-style: none;
+.navbar h2 a {
+	color: #212121;
+}
+
+.navbar h2 a i {
+	margin-right: 4px;
 }

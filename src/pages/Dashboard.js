@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Navbar from '../components/Navbar';
 
 class Dashboard extends Component {
 	componentDidMount() {
@@ -6,7 +7,12 @@ class Dashboard extends Component {
 	}
 
 	render() {
-		return <h1>This is the dashboard page</h1>;
+		return (
+			<React.Fragment>
+				<Navbar {...this.props} />
+				This is the dashboard page
+			</React.Fragment>
+		);
 	}
 }
 

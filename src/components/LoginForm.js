@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Form, Button, Input, Row} from 'antd';
+import {Form, Button, Input, Row, message} from 'antd';
 import axios from 'axios';
 
 class LoginForm extends Component {
@@ -20,12 +20,12 @@ class LoginForm extends Component {
 
 	onSubmit = async e => {
 		e.preventDefault();
+		this.setState({loading: true});
 		this.props.form.validateFields((err, values) => {
 			if (!err) {
 				console.log('Received values of form: ', values);
 			}
 		});
-		console.log(this.state);
 		const mutationString = `mutation {
 			login(data: {
 				email: "${this.state.email}"
@@ -42,18 +42,22 @@ class LoginForm extends Component {
 		try {
 			const result = await axios({
 				method: 'POST',
-				url: 'http://localhost:4000',
+				url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
 				data: {
 					query: mutationString
 				}
 			});
-			console.log(result);
+			localStorage.setItem('token', result.data.data.login.token);
+			localStorage.setItem('userId', result.data.data.login.user.id);
+			localStorage.setItem('isAuth', true);
 			this.setState({
 				email: '',
 				password: '',
 				loading: false,
 				error: false
 			});
+			message.success('Logged in successfully!');
+			this.props.history.push('/');
 		} catch (err) {
 			console.log(err);
 			this.setState({

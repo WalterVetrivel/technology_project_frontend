@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Form, Button, Input, Row, DatePicker, Select} from 'antd';
+import {Form, Button, Input, Row, DatePicker, Select, message} from 'antd';
 import countryApi from 'country-state-city';
 import axios from 'axios';
 
@@ -51,32 +51,14 @@ class SignupForm extends Component {
 
 	onCountryChange = async e => {
 		this.setState({country: e});
-		const states = countryApi.getStatesOfCountry(e);
-		this.setState({
-			allStates: states.map(state => {
-				return {
-					code: state.id,
-					name: state.name
-				};
-			})
-		});
 	};
 
 	onStateChange = async e => {
-		this.setState({state: e});
-		const cities = countryApi.getCitiesOfState(e);
-		this.setState({
-			allCities: cities.map(city => {
-				return {
-					code: city.id,
-					name: city.name
-				};
-			})
-		});
+		this.setState({state: e.target.value});
 	};
 
 	onCityChange = e => {
-		this.setState({city: e});
+		this.setState({city: e.target.value});
 	};
 
 	onDateOfBirthChange = e => {
@@ -94,8 +76,8 @@ class SignupForm extends Component {
 		});
 		const mutationString = `mutation {
 			createUser(data: {
-				firstName: "${this.state.firstName}"
-				lastName: "${this.state.lastName}"
+				firstName: "${this.state.firstName.toLowerCase()}"
+				lastName: "${this.state.lastName.toLowerCase()}"
 				dateOfBirth: "${new Date(this.state.dateOfBirth._d).toISOString()}"
 				email: "${this.state.email}"
 				password: "${this.state.password}"
@@ -114,12 +96,14 @@ class SignupForm extends Component {
 		try {
 			const result = await axios({
 				method: 'POST',
-				url: 'http://localhost:4000',
+				url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
 				data: {
 					query: mutationString
 				}
 			});
-			console.log(result);
+			localStorage.setItem('token', result.data.data.createUser.token);
+			localStorage.setItem('userId', result.data.data.createUser.user.id);
+			localStorage.setItem('isAuth', true);
 			this.setState({
 				firstName: '',
 				lastName: '',
@@ -130,13 +114,14 @@ class SignupForm extends Component {
 				country: '',
 				password: '',
 				allCountries: [],
-				allStates: [],
-				allCities: [],
 				loading: false,
 				error: false
 			});
+			message.success('Signup successful!');
+			this.props.history.push('/dashboard');
 		} catch (err) {
 			console.log(err);
+			message.error('Could not signup. Something went wrong.');
 			this.setState({
 				firstName: '',
 				lastName: '',
@@ -146,8 +131,6 @@ class SignupForm extends Component {
 				state: '',
 				country: '',
 				allCountries: [],
-				allStates: [],
-				allCities: [],
 				loading: false,
 				error: true
 			});
@@ -207,41 +190,19 @@ class SignupForm extends Component {
 							))}
 						</Select>
 					</Form.Item>
-					<Form.Item label="State">
-						<Select
-							showSearch
-							placeholder="Select your state"
+					<Form.Item label="Region">
+						<Input
+							placeholder="Eg. Doe"
 							value={this.state.state}
 							onChange={this.onStateChange}
-							filterOption={(input, option) =>
-								option.props.children
-									.toLowerCase()
-									.indexOf(input.toLowerCase()) >= 0
-							}>
-							{this.state.allStates.map(state => (
-								<Select.Option key={state.code} value={state.code}>
-									{state.name}
-								</Select.Option>
-							))}
-						</Select>
+						/>
 					</Form.Item>
 					<Form.Item label="City">
-						<Select
-							showSearch
-							placeholder="Select your city"
+						<Input
+							placeholder="Eg. Canberra"
 							value={this.state.city}
 							onChange={this.onCityChange}
-							filterOption={(input, option) =>
-								option.props.children
-									.toLowerCase()
-									.indexOf(input.toLowerCase()) >= 0
-							}>
-							{this.state.allCities.map(city => (
-								<Select.Option key={city.code} value={city.code}>
-									{city.name}
-								</Select.Option>
-							))}
-						</Select>
+						/>
 					</Form.Item>
 					<Form.Item label="Date of Birth">
 						<DatePicker

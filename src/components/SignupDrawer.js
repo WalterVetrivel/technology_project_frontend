@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Drawer, Tabs, Button} from 'antd';
+import {Drawer, Tabs, Button, Icon} from 'antd';
 import SignupForm from './SignupForm';
 import LoginForm from './LoginForm';
 const {TabPane} = Tabs;
@@ -20,7 +20,11 @@ class SignupDrawer extends Component {
 	render() {
 		return (
 			<div>
-				<Button type="primary" size="large" onClick={this.showDrawer}>
+				<Button
+					type="primary"
+					size="large"
+					onClick={this.showDrawer}
+					icon="login">
 					Signup/Login
 				</Button>
 				<Drawer
@@ -29,11 +33,25 @@ class SignupDrawer extends Component {
 					onClose={this.onClose}
 					visible={this.state.visible}>
 					<Tabs defaultActiveKey="1">
-						<TabPane tab="Signup" key={1}>
-							<SignupForm {...this.props} />
+						<TabPane
+							tab={
+								<React.Fragment>
+									<Icon type="form" />
+									Signup
+								</React.Fragment>
+							}
+							key={1}>
+							<SignupForm {...this.props} onFinish={this.onClose.bind(this)} />
 						</TabPane>
-						<TabPane tab="Login" key={2}>
-							<LoginForm {...this.props} />
+						<TabPane
+							tab={
+								<React.Fragment>
+									<Icon type="login" />
+									Login
+								</React.Fragment>
+							}
+							key={2}>
+							<LoginForm {...this.props} onFinish={this.onClose.bind(this)} />
 						</TabPane>
 					</Tabs>
 				</Drawer>
