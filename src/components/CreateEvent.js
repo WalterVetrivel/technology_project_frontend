@@ -34,13 +34,13 @@ class CreateEvent extends Component {
 			'charity',
 			'sale'
 		],
-		selectedCategories: [],
+		selectedCategory: '',
 		allCountries: [],
 		allStates: [],
 		allCities: []
 	};
 
-	async componentDidMount() {
+	componentDidMount() {
 		const countries = countryApi.getAllCountries();
 		this.setState({
 			allCountries: countries.map(country => {
@@ -111,12 +111,8 @@ class CreateEvent extends Component {
 		}
 	};
 
-	onCategoriesChange = e => {
-		this.setState(prevState => {
-			return {
-				selectedCategories: e
-			};
-		});
+	onCategoryChange = e => {
+		this.setState({selectedCategory: e});
 	};
 
 	onSubmit = async e => {
@@ -133,10 +129,7 @@ class CreateEvent extends Component {
 			<Row type="flex" justify="center">
 				<Col span={12}>
 					<h1>Create Event</h1>
-					<Form
-						labelCol={{xs: {span: 24}, sm: {span: 8}}}
-						wrapperCol={{xs: {span: 24}, sm: {span: 16}}}
-						onSubmit={this.onSubmit}>
+					<Form onSubmit={this.onSubmit}>
 						<Form.Item label="Title">
 							<Input
 								placeholder="Eg. Dinner"
@@ -161,14 +154,15 @@ class CreateEvent extends Component {
 								onChange={this.onPriceChange}
 							/>
 						</Form.Item>
-						{this.state.selectedCategories}
-						<Form.Item label="Categories">
+						<Form.Item label="Category">
 							<Select
-								mode="tags"
-								placeholder="Select categories"
-								onChange={this.onCategoriesChange}>
+								placeholder="Select category"
+								value={this.state.selectedCategory}
+								onChange={this.onCategoryChange}>
 								{this.state.categories.map(category => (
-									<Select.Option key={category}>{category}</Select.Option>
+									<Select.Option key={category} value={category}>
+										{category}
+									</Select.Option>
 								))}
 							</Select>
 						</Form.Item>

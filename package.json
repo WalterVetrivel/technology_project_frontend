@@ -7,6 +7,7 @@
     "axios": "^0.18.0",
     "country-state-city": "^0.1.2",
     "google-map-react": "^1.1.4",
+    "node-sass": "^4.11.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-geosuggest": "^2.12.0",
