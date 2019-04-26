@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom';
 import Home from './pages/Home';
+import User from './pages/User';
 import Event from './pages/Event';
 import Dashboard from './pages/Dashboard';
 import SearchResults from './pages/SearchResults';
@@ -17,6 +18,7 @@ class App extends Component {
 						) : (
 							<Redirect from="/dashboard" to="/" />
 						)}
+						<Route path="/user/:id" component={User} />
 						<Route path="/event/:id" component={Event} />
 						<Route path="/search" component={SearchResults} />
 						<Route path="/logout" component={Logout} />

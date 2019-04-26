@@ -192,7 +192,7 @@ class SignupForm extends Component {
 					</Form.Item>
 					<Form.Item label="Region">
 						<Input
-							placeholder="Eg. Doe"
+							placeholder="Eg. New South Wales"
 							value={this.state.state}
 							onChange={this.onStateChange}
 						/>

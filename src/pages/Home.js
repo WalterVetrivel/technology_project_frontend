@@ -1,15 +1,16 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import {Button, Row, Col, Divider} from 'antd';
+import {Button, Row, Col, Divider, Skeleton} from 'antd';
 import SignupDrawer from '../components/SignupDrawer';
 import Navbar from '../components/Navbar';
 import EventCard from '../components/EventCard';
 import axios from 'axios';
+import CreateEventModal from '../components/CreateEventModal';
 import classes from './styles/Home.module.scss';
 
 class Home extends Component {
 	state = {
-		isAuth: false,
+		loading: true,
 		localEvents: [],
 		upcomingEvents: [],
 		isError: false
@@ -32,6 +33,7 @@ class Home extends Component {
 					registrationAfter: "${new Date().toISOString()}"
 				}
 				orderBy: "dateTime_ASC"
+				first: 10
 			) {
 				id
 				title
@@ -44,6 +46,11 @@ class Home extends Component {
 				state
 				country
 				imageUrl
+				creator {
+					id
+					firstName
+					lastName
+				}
 			}
 		}`;
 		try {
@@ -54,7 +61,7 @@ class Home extends Component {
 					query: queryString
 				}
 			});
-			this.setState({localEvents: results.data.data.events});
+			this.setState({localEvents: results.data.data.events, loading: false});
 		} catch (err) {
 			console.log('Could not fetch local events');
 			this.setState({isError: true});
@@ -81,11 +88,7 @@ class Home extends Component {
 							</Col>
 							<Col>
 								{localStorage.getItem('isAuth') ? (
-									<Link to="/dashboard">
-										<Button type="primary" size="large" icon="form">
-											Create Event
-										</Button>
-									</Link>
+									<CreateEventModal />
 								) : (
 									<SignupDrawer />
 								)}
@@ -98,11 +101,17 @@ class Home extends Component {
 						<h2>Events near you</h2>
 					</Divider>
 					<Row gutter={16}>
-						{this.state.localEvents.map(event => (
-							<Col xs={24} sm={12} md={8} key={event.id}>
-								<EventCard event={event} />
+						{this.state.loading ? (
+							<Col xs={24} sm={12} md={6}>
+								<Skeleton active />
 							</Col>
-						))}
+						) : (
+							this.state.localEvents.map(event => (
+								<Col xs={24} sm={12} md={6} key={event.id}>
+									<EventCard event={event} />
+								</Col>
+							))
+						)}
 					</Row>
 				</main>
 			</React.Fragment>

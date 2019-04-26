@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {CardElement, injectStripe} from 'react-stripe-elements';
 import {
 	Form,
 	Button,
@@ -13,31 +14,37 @@ import Uploader from './Uploader';
 import axios from 'axios';
 import countryApi from 'country-state-city';
 
-class CreateEvent extends Component {
+class CreateEventForm extends Component {
 	state = {
 		title: '',
 		description: '',
 		dateTime: null,
 		registrationDeadline: null,
 		price: null,
-		selectedCountry: '',
-		selectedState: '',
-		selectedCity: '',
+		country: '',
+		state: '',
+		city: '',
 		imageUrl: '',
+		address: '',
 		categories: [
-			'food',
-			'music',
-			'entertainment',
-			'education',
-			'job',
-			'religion',
-			'charity',
-			'sale'
+			'Food',
+			'Music',
+			'Religion',
+			'Entertainment',
+			'Movie',
+			'Charity',
+			'Rally',
+			'Education',
+			'Politics',
+			'Social',
+			'Job',
+			'Sale',
+			'Auction',
+			'Fundraiser',
+			'Other'
 		],
 		selectedCategory: '',
-		allCountries: [],
-		allStates: [],
-		allCities: []
+		allCountries: []
 	};
 
 	componentDidMount() {
@@ -71,32 +78,14 @@ class CreateEvent extends Component {
 
 	onCountryChange = async e => {
 		this.setState({selectedCountry: e});
-		const states = countryApi.getStatesOfCountry(e);
-		this.setState({
-			allStates: states.map(state => {
-				return {
-					code: state.id,
-					name: state.name
-				};
-			})
-		});
 	};
 
 	onStateChange = async e => {
-		this.setState({selectedState: e});
-		const cities = countryApi.getCitiesOfState(e);
-		this.setState({
-			allCities: cities.map(city => {
-				return {
-					code: city.id,
-					name: city.name
-				};
-			})
-		});
+		this.setState({state: e.target.value});
 	};
 
 	onCityChange = e => {
-		this.setState({selectedCity: e});
+		this.setState({city: e.target.value});
 	};
 
 	onDateTimeChange = e => {
@@ -127,8 +116,7 @@ class CreateEvent extends Component {
 	render() {
 		return (
 			<Row type="flex" justify="center">
-				<Col span={12}>
-					<h1>Create Event</h1>
+				<Col span={20}>
 					<Form onSubmit={this.onSubmit}>
 						<Form.Item label="Title">
 							<Input
@@ -170,7 +158,7 @@ class CreateEvent extends Component {
 							<Select
 								showSearch
 								placeholder="Select your country"
-								value={this.state.selectedCountry}
+								value={this.state.country}
 								onChange={this.onCountryChange}
 								filterOption={(input, option) =>
 									option.props.children
@@ -184,41 +172,19 @@ class CreateEvent extends Component {
 								))}
 							</Select>
 						</Form.Item>
-						<Form.Item label="State">
-							<Select
-								showSearch
-								placeholder="Select your state"
-								value={this.state.selectedState}
+						<Form.Item label="Region">
+							<Input
+								placeholder="Eg. New South Wales"
+								value={this.state.state}
 								onChange={this.onStateChange}
-								filterOption={(input, option) =>
-									option.props.children
-										.toLowerCase()
-										.indexOf(input.toLowerCase()) >= 0
-								}>
-								{this.state.allStates.map(state => (
-									<Select.Option key={state.code} value={state.code}>
-										{state.name}
-									</Select.Option>
-								))}
-							</Select>
+							/>
 						</Form.Item>
 						<Form.Item label="City">
-							<Select
-								showSearch
-								placeholder="Select your city"
-								value={this.state.selectedCity}
+							<Input
+								placeholder="Eg. Canberra"
+								value={this.state.city}
 								onChange={this.onCityChange}
-								filterOption={(input, option) =>
-									option.props.children
-										.toLowerCase()
-										.indexOf(input.toLowerCase()) >= 0
-								}>
-								{this.state.allCities.map(city => (
-									<Select.Option key={city.code} value={city.code}>
-										{city.name}
-									</Select.Option>
-								))}
-							</Select>
+							/>
 						</Form.Item>
 						<Form.Item label="Date">
 							<DatePicker
@@ -244,6 +210,9 @@ class CreateEvent extends Component {
 								}}
 							/>
 						</Form.Item>
+						<Form.Item label="Card details to receive payment">
+							<CardElement />
+						</Form.Item>
 						<Row type="flex" justify="end">
 							<Form.Item>
 								<Button htmlType="submit" type="primary">
@@ -258,6 +227,8 @@ class CreateEvent extends Component {
 	}
 }
 
-const WrappedCreateEventForm = Form.create({name: 'createEvent'})(CreateEvent);
+const WrappedCreateEventForm = Form.create({name: 'createEvent'})(
+	injectStripe(CreateEventForm)
+);
 
 export default WrappedCreateEventForm;

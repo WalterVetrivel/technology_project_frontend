@@ -15,6 +15,7 @@
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.0",
+    "react-stripe-elements": "^3.0.0",
     "uploadcare-widget": "^3.7.0"
   },
   "scripts": {

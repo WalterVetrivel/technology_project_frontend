@@ -20,12 +20,17 @@ const eventCard = ({event}) => (
 			title={
 				<Row type="flex" justify="space-between">
 					<h3>{event.title}</h3>
-					<strong>${event.price.toFixed(2)}</strong>
+					<strong>
+						{event.price > 0 ? `$${event.price.toFixed(2)}` : 'Free'}
+					</strong>
 				</Row>
 			}
 			description={
-				<Paragraph ellipsis={{rows: 2, expandable: true}}>
-					{event.description}
+				<Paragraph>
+					by{' '}
+					<strong>
+						{event.creator.firstName + ' ' + event.creator.lastName}
+					</strong>
 				</Paragraph>
 			}
 		/>
