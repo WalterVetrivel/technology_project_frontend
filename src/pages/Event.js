@@ -1,18 +1,22 @@
 import React, {Component} from 'react';
 import Navbar from '../components/Navbar';
 import axios from 'axios';
-import {Row, Col, Button, Tabs, Skeleton, Statistic, Affix} from 'antd';
+import {Row, Col, Tabs, Skeleton, Statistic} from 'antd';
 import EventDetails from '../components/EventDetails';
+import RegisterModal from '../components/RegisterModal';
+import SignupDrawer from '../components/SignupDrawer';
 import classes from './styles/Event.module.scss';
+import {Button} from 'antd/lib/radio';
 
 class Event extends Component {
 	state = {
+		loading: true,
 		event: null,
-		location: {lat: 0, lng: 0}
+		location: {lat: 0, lng: 0},
+		isRegistered: false
 	};
 
 	async componentDidMount() {
-		console.log(this.props);
 		const eventId = this.props.match.params.id;
 		const requestQuery = `{
 			event(id: "${eventId}") {
@@ -53,7 +57,26 @@ class Event extends Component {
 			}`
 		);
 		const location = geocodeInfo.data.results[0].geometry.location;
-		this.setState({event, location});
+		if (localStorage.getItem('isAuth')) {
+			const requestQuery = `{
+				isRegistered(eventId: "${eventId}")
+			}`;
+			const result = await axios({
+				method: 'POST',
+				url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				},
+				data: {
+					query: requestQuery
+				}
+			});
+			console.log(result.data.data.isRegistered);
+			this.setState({
+				isRegistered: result.data.data.isRegistered
+			});
+		}
+		this.setState({event, location, loading: false});
 	}
 
 	render() {
@@ -63,7 +86,7 @@ class Event extends Component {
 				<main className={classes.main}>
 					<Row type="flex" justify="center">
 						<Col xs={24} md={20} lg={18}>
-							{this.state.event ? (
+							{!this.state.loading ? (
 								<React.Fragment>
 									<div>
 										<img
@@ -75,26 +98,30 @@ class Event extends Component {
 											}
 										/>
 									</div>
-									<Affix>
-										<div className={classes.eventHeader}>
-											<Row type="flex" justify="space-between" align="middle">
-												<h2>{this.state.event.title}</h2>
-												<div>
-													<Statistic
-														value={
-															this.state.event.price > 0
-																? `$${this.state.event.price.toFixed(2)}`
-																: 'Free'
-														}
-														precision={2}
-													/>
-													<Button type="primary" size="large">
-														Register
-													</Button>
-												</div>
-											</Row>
-										</div>
-									</Affix>
+									<div className={classes.eventHeader}>
+										<Row type="flex" justify="space-between" align="middle">
+											<h2>{this.state.event.title}</h2>
+											<div>
+												<Statistic
+													value={
+														this.state.event.price > 0
+															? `$${this.state.event.price.toFixed(2)}`
+															: 'Free'
+													}
+													precision={2}
+												/>
+												{localStorage.getItem('isAuth') ? (
+													this.state.isRegistered ? (
+														<RegisterModal event={this.state.event} />
+													) : (
+														<Button>Registered!</Button>
+													)
+												) : (
+													<SignupDrawer size="large" text="Login" />
+												)}
+											</div>
+										</Row>
+									</div>
 									<Tabs defaultActiveKey="1">
 										<Tabs.TabPane tab="Details" key="1">
 											<EventDetails

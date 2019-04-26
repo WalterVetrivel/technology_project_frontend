@@ -90,7 +90,11 @@ class Home extends Component {
 								{localStorage.getItem('isAuth') ? (
 									<CreateEventModal />
 								) : (
-									<SignupDrawer />
+									<SignupDrawer
+										size="large"
+										text="Signup/Login"
+										{...this.props}
+									/>
 								)}
 							</Col>
 						</Row>
@@ -102,7 +106,7 @@ class Home extends Component {
 					</Divider>
 					<Row gutter={16}>
 						{this.state.loading ? (
-							<Col xs={24} sm={12} md={6}>
+							<Col xs={24} sm={12} md={8} lg={6}>
 								<Skeleton active />
 							</Col>
 						) : (

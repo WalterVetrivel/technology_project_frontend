@@ -26,7 +26,7 @@ const navbar = props => (
 					</li>
 				</ul>
 			) : (
-				<SignupDrawer {...props} />
+				<SignupDrawer size="default" text="Signup/Login" {...props} />
 			)}
 		</nav>
 	</Affix>

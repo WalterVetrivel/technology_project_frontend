@@ -22,10 +22,10 @@ class SignupDrawer extends Component {
 			<div>
 				<Button
 					type="primary"
-					size="large"
+					size={this.props.size}
 					onClick={this.showDrawer}
 					icon="login">
-					Signup/Login
+					{this.props.text}
 				</Button>
 				<Drawer
 					title="Sign up to start hosting events"

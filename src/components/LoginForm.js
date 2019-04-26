@@ -35,6 +35,7 @@ class LoginForm extends Component {
 					id
 					firstName
 					lastName
+					email
 				}
 				token
 			}
@@ -47,8 +48,14 @@ class LoginForm extends Component {
 					query: mutationString
 				}
 			});
-			localStorage.setItem('token', result.data.data.login.token);
-			localStorage.setItem('userId', result.data.data.login.user.id);
+			const loginInfo = result.data.data.login;
+			localStorage.setItem('token', loginInfo.token);
+			localStorage.setItem('userId', loginInfo.user.id);
+			localStorage.setItem('email', loginInfo.user.email);
+			localStorage.setItem(
+				'name',
+				`${loginInfo.user.firstName} ${loginInfo.user.lastName}`
+			);
 			localStorage.setItem('isAuth', true);
 			this.setState({
 				email: '',
@@ -57,7 +64,7 @@ class LoginForm extends Component {
 				error: false
 			});
 			message.success('Logged in successfully!');
-			this.props.history.push('/');
+			window.location.reload();
 		} catch (err) {
 			console.log(err);
 			this.setState({

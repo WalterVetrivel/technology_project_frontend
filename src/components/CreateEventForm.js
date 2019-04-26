@@ -8,7 +8,8 @@ import {
 	Col,
 	DatePicker,
 	InputNumber,
-	Select
+	Select,
+	message
 } from 'antd';
 import Uploader from './Uploader';
 import axios from 'axios';
@@ -26,6 +27,7 @@ class CreateEventForm extends Component {
 		city: '',
 		imageUrl: '',
 		address: '',
+		postCode: '',
 		categories: [
 			'Food',
 			'Music',
@@ -77,7 +79,7 @@ class CreateEventForm extends Component {
 	};
 
 	onCountryChange = async e => {
-		this.setState({selectedCountry: e});
+		this.setState({country: e});
 	};
 
 	onStateChange = async e => {
@@ -86,6 +88,14 @@ class CreateEventForm extends Component {
 
 	onCityChange = e => {
 		this.setState({city: e.target.value});
+	};
+
+	onAddressChange = e => {
+		this.setState({address: e.target.value});
+	};
+
+	onPostCodeChange = e => {
+		this.setState({postCode: e.target.value});
 	};
 
 	onDateTimeChange = e => {
@@ -108,9 +118,100 @@ class CreateEventForm extends Component {
 		e.preventDefault();
 		this.props.form.validateFields((err, values) => {
 			if (!err) {
-				console.log('Received values of form: ', values);
 			}
 		});
+		const results = await axios({
+			method: 'POST',
+			url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
+			data: {
+				query: `{
+					user(id: "${localStorage.getItem('userId')}") {
+						firstName
+						lastName
+					}
+				}`
+			}
+		});
+		const token = await this.props.stripe.createToken({
+			name: `${results.data.data.user.firstName} ${
+				results.data.data.user.lastName
+			}`
+		});
+		const requestQuery = `mutation {
+			createEvent(data: {
+				title: "${this.state.title}"
+				description: "${this.state.description}"
+				price: ${this.state.price}
+				category: "${this.state.selectedCategory}"
+				dateTime: "${new Date(this.state.dateTime).toISOString()}"
+				registrationDeadline: "${new Date(
+					this.state.registrationDeadline
+				).toISOString()}"
+				address: "${this.state.address}"
+				city: "${this.state.city}"
+				postCode: "${this.state.postCode}"
+				state: "${this.state.state}"
+				country: "${this.state.country}"
+				imageUrl: "${this.state.imageUrl}"
+				paymentInfo: "${token.token.id}"
+			}) {
+				id
+				title
+				creator {
+					id
+					firstName
+					lastName
+				}
+			}
+		}`;
+		try {
+			const result = await axios({
+				method: 'POST',
+				url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				},
+				data: {
+					query: requestQuery
+				}
+			});
+			console.log(result.data);
+			message.success('Event created successfully!');
+			this.setState({
+				title: '',
+				description: '',
+				dateTime: null,
+				registrationDeadline: null,
+				price: null,
+				country: '',
+				state: '',
+				city: '',
+				imageUrl: '',
+				address: '',
+				postCode: '',
+				categories: [
+					'Food',
+					'Music',
+					'Religion',
+					'Entertainment',
+					'Movie',
+					'Charity',
+					'Rally',
+					'Education',
+					'Politics',
+					'Social',
+					'Job',
+					'Sale',
+					'Auction',
+					'Fundraiser',
+					'Other'
+				],
+				selectedCategory: ''
+			});
+		} catch (err) {
+			message.error('Could not create event.');
+			console.log(err);
+		}
 	};
 
 	render() {
@@ -133,6 +234,7 @@ class CreateEventForm extends Component {
 								style={{resize: 'none'}}
 								value={this.state.description}
 								onChange={this.onDescriptionChange}
+								required
 							/>
 						</Form.Item>
 						<Form.Item label="Price">
@@ -140,19 +242,69 @@ class CreateEventForm extends Component {
 								placeholder="Eg. $15.99"
 								value={this.state.price}
 								onChange={this.onPriceChange}
+								required
 							/>
 						</Form.Item>
 						<Form.Item label="Category">
 							<Select
 								placeholder="Select category"
 								value={this.state.selectedCategory}
-								onChange={this.onCategoryChange}>
+								onChange={this.onCategoryChange}
+								required>
 								{this.state.categories.map(category => (
 									<Select.Option key={category} value={category}>
 										{category}
 									</Select.Option>
 								))}
 							</Select>
+						</Form.Item>
+						<Form.Item label="Date">
+							<DatePicker
+								showTime
+								value={this.state.dateTime}
+								onChange={this.onDateTimeChange}
+								required
+							/>
+						</Form.Item>
+						<Form.Item label="Registration Deadline">
+							<DatePicker
+								showTime
+								value={this.state.registrationDeadline}
+								onChange={this.onRegistrationDeadlineChange}
+								required
+							/>
+						</Form.Item>
+						<Form.Item label="Address">
+							<Input
+								placeholder="Eg. 20, North Street"
+								value={this.state.address}
+								onChange={this.onAddressChange}
+								required
+							/>
+						</Form.Item>
+						<Form.Item label="City">
+							<Input
+								placeholder="Eg. Canberra"
+								value={this.state.city}
+								onChange={this.onCityChange}
+								required
+							/>
+						</Form.Item>
+						<Form.Item label="Post Code">
+							<Input
+								placeholder="Eg. 2617"
+								value={this.state.postCode}
+								onChange={this.onPostCodeChange}
+								required
+							/>
+						</Form.Item>
+						<Form.Item label="Region">
+							<Input
+								placeholder="Eg. New South Wales"
+								value={this.state.state}
+								onChange={this.onStateChange}
+								required
+							/>
 						</Form.Item>
 						<Form.Item label="Country">
 							<Select
@@ -164,41 +316,14 @@ class CreateEventForm extends Component {
 									option.props.children
 										.toLowerCase()
 										.indexOf(input.toLowerCase()) >= 0
-								}>
+								}
+								required>
 								{this.state.allCountries.map(country => (
-									<Select.Option key={country.code} value={country.code}>
+									<Select.Option key={country.name} value={country.name}>
 										{country.name}
 									</Select.Option>
 								))}
 							</Select>
-						</Form.Item>
-						<Form.Item label="Region">
-							<Input
-								placeholder="Eg. New South Wales"
-								value={this.state.state}
-								onChange={this.onStateChange}
-							/>
-						</Form.Item>
-						<Form.Item label="City">
-							<Input
-								placeholder="Eg. Canberra"
-								value={this.state.city}
-								onChange={this.onCityChange}
-							/>
-						</Form.Item>
-						<Form.Item label="Date">
-							<DatePicker
-								showTime
-								value={this.state.dateTime}
-								onChange={this.onDateTimeChange}
-							/>
-						</Form.Item>
-						<Form.Item label="Registration Deadline">
-							<DatePicker
-								showTime
-								value={this.state.dateTime}
-								onChange={this.onDateTimeChange}
-							/>
 						</Form.Item>
 						<Form.Item label="Image">
 							<Uploader
@@ -215,7 +340,11 @@ class CreateEventForm extends Component {
 						</Form.Item>
 						<Row type="flex" justify="end">
 							<Form.Item>
-								<Button htmlType="submit" type="primary">
+								<Button
+									htmlType="submit"
+									type="primary"
+									size="large"
+									icon="check-circle">
 									Create Event
 								</Button>
 							</Form.Item>

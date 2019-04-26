@@ -101,8 +101,14 @@ class SignupForm extends Component {
 					query: mutationString
 				}
 			});
-			localStorage.setItem('token', result.data.data.createUser.token);
-			localStorage.setItem('userId', result.data.data.createUser.user.id);
+			const loginInfo = result.data.data.createUser;
+			localStorage.setItem('token', loginInfo.token);
+			localStorage.setItem('userId', loginInfo.user.id);
+			localStorage.setItem('email', loginInfo.user.email);
+			localStorage.setItem(
+				'name',
+				`${loginInfo.user.firstName} ${loginInfo.user.lastName}`
+			);
 			localStorage.setItem('isAuth', true);
 			this.setState({
 				firstName: '',
@@ -118,7 +124,7 @@ class SignupForm extends Component {
 				error: false
 			});
 			message.success('Signup successful!');
-			this.props.history.push('/dashboard');
+			window.location.reload();
 		} catch (err) {
 			console.log(err);
 			message.error('Could not signup. Something went wrong.');

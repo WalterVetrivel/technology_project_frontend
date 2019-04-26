@@ -6,6 +6,7 @@ import Event from './pages/Event';
 import Dashboard from './pages/Dashboard';
 import SearchResults from './pages/SearchResults';
 import Logout from './components/Logout';
+import Footer from './components/Footer';
 
 class App extends Component {
 	render() {
@@ -25,6 +26,7 @@ class App extends Component {
 						<Redirect from="/home" to="/" />
 						<Route path="/" component={Home} />
 					</Switch>
+					<Footer />
 				</div>
 			</BrowserRouter>
 		);
