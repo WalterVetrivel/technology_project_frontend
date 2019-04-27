@@ -1,8 +1,8 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {Affix, Icon} from 'antd';
-import SignupDrawer from './SignupDrawer';
-import classes from './styles/Navbar.module.scss';
+import SignupDrawer from '../Auth/SignupDrawer';
+import classes from '../styles/Navbar.module.scss';
 
 const navbar = props => (
 	<Affix>

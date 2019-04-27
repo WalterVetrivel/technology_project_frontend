@@ -11,7 +11,7 @@ import {
 	Select,
 	message
 } from 'antd';
-import Uploader from './Uploader';
+import Uploader from '../Uploader';
 import axios from 'axios';
 import countryApi from 'country-state-city';
 

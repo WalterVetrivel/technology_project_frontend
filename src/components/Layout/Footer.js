@@ -1,6 +1,6 @@
 import React from 'react';
 import {Row, Col} from 'antd';
-import classes from './styles/Footer.module.scss';
+import classes from '../styles/Footer.module.scss';
 
 const footer = () => (
 	<footer className={classes.footer}>

@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {Card, Statistic, Row, Icon, Col, Button} from 'antd';
-import RegisterModal from './RegisterModal';
-import SignupDrawer from './SignupDrawer';
+import RegisterModal from '../Registration/RegisterModal';
+import SignupDrawer from '../Auth/SignupDrawer';
 import axios from 'axios';
 
 class EventSearchResult extends Component {

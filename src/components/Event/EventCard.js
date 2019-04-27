@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {Card, Row, Typography, Icon, Button} from 'antd';
 import {Link} from 'react-router-dom';
-import RegisterModal from './RegisterModal';
-import SignupDrawer from './SignupDrawer';
+import RegisterModal from '../Registration/RegisterModal';
+import SignupDrawer from '../Auth/SignupDrawer';
 import axios from 'axios';
 
 const {Paragraph} = Typography;

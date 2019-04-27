@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {Tabs, Avatar, Row, Col, Button, Skeleton, message} from 'antd';
-import Navbar from '../components/Navbar';
+import Navbar from '../components/Layout/Navbar';
+import UserAbout from '../components/User/UserAbout';
+import UserEvents from '../components/User/UserEvents';
+import UserRegistrations from '../components/User/UserRegistrations';
 import axios from 'axios';
 import classes from './styles/User.module.scss';
 
@@ -18,7 +21,10 @@ class User extends Component {
 
 	async componentDidMount() {
 		const userId = this.props.match.params.id;
-		if (localStorage.getItem('userId') === userId) {
+		if (
+			localStorage.getItem('isAuth') &&
+			localStorage.getItem('userId') === userId
+		) {
 			this.setState({isCurrentUser: true});
 		}
 		const profileQuery = `{
@@ -59,7 +65,8 @@ class User extends Component {
 								<Col>
 									<div className={classes.avatar}>
 										<Avatar size={80} icon="user" />
-										{this.state.isCurrentUser ? (
+										{!this.state.isCurrentUser &&
+										localStorage.getItem('isAuth') ? (
 											<Button ghost type="default" icon="plus">
 												Follow
 											</Button>
@@ -79,14 +86,23 @@ class User extends Component {
 						<main className={classes.main}>
 							<Tabs defaultActiveKey="1" animated>
 								<Tabs.TabPane key="1" tab="About">
-									<p>About</p>
+									<UserAbout
+										isCurrentUser={this.state.isCurrentUser}
+										userId={this.props.match.params.id}
+									/>
 								</Tabs.TabPane>
 								<Tabs.TabPane key="2" tab="Hosted events">
-									<p>Hosted events</p>
+									<UserEvents
+										isCurrentUser={this.state.isCurrentUser}
+										userId={this.props.match.params.id}
+									/>
 								</Tabs.TabPane>
 								{this.state.isCurrentUser ? (
 									<Tabs.TabPane key="3" tab="Registered Events">
-										<p>Registered Events</p>
+										<UserRegistrations
+											isCurrentUser={this.state.isCurrentUser}
+											userId={this.props.match.params.id}
+										/>
 									</Tabs.TabPane>
 								) : null}
 							</Tabs>

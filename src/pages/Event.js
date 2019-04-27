@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
-import Navbar from '../components/Navbar';
+import Navbar from '../components/Layout/Navbar';
 import axios from 'axios';
-import {Row, Col, Tabs, Skeleton, Statistic} from 'antd';
-import EventDetails from '../components/EventDetails';
-import RegisterModal from '../components/RegisterModal';
-import SignupDrawer from '../components/SignupDrawer';
+import {Row, Col, Tabs, Skeleton, Statistic, Button} from 'antd';
+import EventDetails from '../components/Event/EventDetails';
+import RegisterModal from '../components/Registration/RegisterModal';
+import SignupDrawer from '../components/Auth/SignupDrawer';
 import classes from './styles/Event.module.scss';
-import {Button} from 'antd/lib/radio';
 
 class Event extends Component {
 	state = {

@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {Button, Row, Col, Divider, Skeleton} from 'antd';
-import SignupDrawer from '../components/SignupDrawer';
-import Navbar from '../components/Navbar';
-import EventCard from '../components/EventCard';
+import SignupDrawer from '../components/Auth/SignupDrawer';
+import Navbar from '../components/Layout/Navbar';
+import EventCard from '../components/Event/EventCard';
+import CreateEventModal from '../components/Event/CreateEventModal';
 import axios from 'axios';
-import CreateEventModal from '../components/CreateEventModal';
 import classes from './styles/Home.module.scss';
 
 class Home extends Component {

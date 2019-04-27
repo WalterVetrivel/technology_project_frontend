@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {List, Button, Row, Col} from 'antd';
-import SearchForm from '../components/SearchForm';
-import Navbar from '../components/Navbar';
-import EventSearchResult from '../components/EventSearchResult';
+import SearchForm from '../components/Search/SearchForm';
+import Navbar from '../components/Layout/Navbar';
+import EventSearchResult from '../components/Search/EventSearchResult';
 import axios from 'axios';
 import classes from './styles/Search.module.scss';
 
