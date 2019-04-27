@@ -1,16 +1,19 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import {Card, Statistic, Row, Icon, Col, Button} from 'antd';
+import {Card, Statistic, Row, Icon, Col, Button, Skeleton} from 'antd';
 import RegisterModal from '../Registration/RegisterModal';
 import SignupDrawer from '../Auth/SignupDrawer';
 import axios from 'axios';
 
 class EventSearchResult extends Component {
 	state = {
-		isRegistered: false
+		isRegistered: false,
+		isCreator: false,
+		loading: true
 	};
 
 	async componentDidMount() {
+		let isRegistered = false;
 		if (localStorage.getItem('isAuth')) {
 			const requestQuery = `{
 				isRegistered(eventId: "${this.props.event.id}")
@@ -25,15 +28,20 @@ class EventSearchResult extends Component {
 					query: requestQuery
 				}
 			});
-			this.setState({
-				isRegistered: result.data.data.isRegistered
-			});
+			isRegistered = result.data.data.isRegistered;
 		}
+		this.setState({
+			isRegistered,
+			isCreator: this.props.event.creator.id === localStorage.getItem('userId'),
+			loading: false
+		});
 	}
 
 	render() {
 		const event = this.props.event;
-		return (
+		return this.state.loading ? (
+			<Skeleton active />
+		) : (
 			<Card
 				style={{width: '100%', backgroundColor: '#fff'}}
 				title={
@@ -47,7 +55,10 @@ class EventSearchResult extends Component {
 						</h3>
 						<small>
 							{' '}
-							by {event.creator.firstName + ' ' + event.creator.lastName}
+							by{' '}
+							<Link to={`/user/${event.creator.id}`}>
+								{event.creator.firstName + ' ' + event.creator.lastName}
+							</Link>
 						</small>
 					</Row>
 				}
@@ -58,8 +69,10 @@ class EventSearchResult extends Component {
 						&nbsp; View
 					</Link>,
 					localStorage.getItem('isAuth') ? (
-						this.state.isRegistered ? (
+						!this.state.isRegistered && !this.state.isCreator ? (
 							<RegisterModal event={event} />
+						) : this.state.isCreator ? (
+							<strong>Your event</strong>
 						) : (
 							<Button>Registered!</Button>
 						)
@@ -94,7 +107,7 @@ class EventSearchResult extends Component {
 						</Col>
 						<Col xs={24} md={8} style={{textAlign: 'center'}}>
 							<Statistic
-								value={event.price > 0 ? event.price.toFixed(2) : 'Free'}
+								value={event.price > 0 ? `$${event.price.toFixed(2)}` : 'Free'}
 							/>
 						</Col>
 					</Row>

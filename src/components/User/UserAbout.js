@@ -43,27 +43,33 @@ class UserAbout extends Component {
 	render() {
 		return (
 			<Spin spinning={this.state.loading}>
-				{!this.state.loading ? (
-					<Row>
-						<Col md={12}>
-							<h2>Bio</h2>
-							{this.state.user.bio ? this.state.user.bio : 'Nothing to show'}
-						</Col>
-						<Col md={8}>
-							<h2>Contact and basic information</h2>
-							<p>
-								<Icon type="mail" />
-								&nbsp;{this.state.user.email}
-							</p>
-							<p>
-								<Icon type="calendar" />
-								&nbsp;{this.getAge(this.state.user.dateOfBirth)} y. o.
-							</p>
-						</Col>
-					</Row>
-				) : (
-					<Skeleton active />
-				)}
+				<Row type="flex" justify="center">
+					<Col sm={20}>
+						{!this.state.loading ? (
+							<Row>
+								<Col md={12}>
+									<h2>Bio</h2>
+									{this.state.user.bio
+										? this.state.user.bio
+										: 'Nothing to show'}
+								</Col>
+								<Col md={8}>
+									<h2>Contact and basic information</h2>
+									<p>
+										<Icon type="mail" />
+										&nbsp;{this.state.user.email}
+									</p>
+									<p>
+										<Icon type="calendar" />
+										&nbsp;{this.getAge(this.state.user.dateOfBirth)} y. o.
+									</p>
+								</Col>
+							</Row>
+						) : (
+							<Skeleton active />
+						)}
+					</Col>
+				</Row>
 			</Spin>
 		);
 	}

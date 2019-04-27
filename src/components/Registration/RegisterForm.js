@@ -1,5 +1,14 @@
 import React, {Component} from 'react';
-import {Form, Button, Row, Col, InputNumber, message, Statistic} from 'antd';
+import {
+	Form,
+	Button,
+	Row,
+	Col,
+	InputNumber,
+	message,
+	notification,
+	Statistic
+} from 'antd';
 import {CardElement, injectStripe} from 'react-stripe-elements';
 import axios from 'axios';
 
@@ -23,6 +32,7 @@ class RegisterForm extends Component {
 
 	onSubmit = async e => {
 		e.preventDefault();
+		alert('submitted');
 		const token = await this.props.stripe.createToken({
 			name: this.props.name
 		});
@@ -58,6 +68,11 @@ class RegisterForm extends Component {
 			});
 			console.log(result.data);
 			message.success('Registered successfully!');
+			notification.open({
+				message: `Registered for ${this.props.event.title}`,
+				description: `${<strong>Name</strong>} ${this.props.name}`,
+				duration: 0
+			});
 		} catch (err) {
 			message.error('Could not register. Please try later.');
 			console.log(err);

@@ -98,6 +98,8 @@ class RegisterModal extends Component {
 								price={this.props.event.price}
 								name={this.state.name}
 								eventId={this.props.event.id}
+								eventTitle={this.props.event.title}
+								onComplete={this.hideModal}
 							/>
 						</Elements>
 					</StripeProvider>

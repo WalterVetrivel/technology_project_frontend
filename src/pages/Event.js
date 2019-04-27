@@ -12,7 +12,38 @@ class Event extends Component {
 		loading: true,
 		event: null,
 		location: {lat: 0, lng: 0},
-		isRegistered: false
+		isRegistered: false,
+		isCreator: false
+	};
+
+	getLocation = async addressString => {
+		const geocodeInfo = await axios.get(
+			`https://maps.googleapis.com/maps/api/geocode/json?address=${addressString.trim()}&key=${
+				process.env.REACT_APP_GOOGLE_GEOCODING_API_KEY
+			}`
+		);
+		return geocodeInfo.data.results[0].geometry.location;
+	};
+
+	getRegistrationStatus = async eventId => {
+		let isRegistered = false;
+		if (localStorage.getItem('isAuth')) {
+			const requestQuery = `{
+					isRegistered(eventId: "${eventId}")
+				}`;
+			const result = await axios({
+				method: 'POST',
+				url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				},
+				data: {
+					query: requestQuery
+				}
+			});
+			isRegistered = result.data.data.isRegistered;
+		}
+		return isRegistered;
 	};
 
 	async componentDidMount() {
@@ -39,43 +70,33 @@ class Event extends Component {
 				}
 			}
 		}`;
-		const result = await axios({
-			method: 'POST',
-			url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
-			data: {
-				query: requestQuery
-			}
-		});
-		const event = result.data.data.event;
-		const addressString = `${event.address},${event.city},${event.postCode},${
-			event.state
-		},${event.country}`;
-		const geocodeInfo = await axios.get(
-			`https://maps.googleapis.com/maps/api/geocode/json?address=${addressString.trim()}&key=${
-				process.env.REACT_APP_GOOGLE_GEOCODING_API_KEY
-			}`
-		);
-		const location = geocodeInfo.data.results[0].geometry.location;
-		if (localStorage.getItem('isAuth')) {
-			const requestQuery = `{
-				isRegistered(eventId: "${eventId}")
-			}`;
+		try {
 			const result = await axios({
 				method: 'POST',
 				url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				},
 				data: {
 					query: requestQuery
 				}
 			});
-			console.log(result.data.data.isRegistered);
+			const event = result.data.data.event;
+
+			const addressString = `${event.address},${event.city},${event.postCode},${
+				event.state
+			},${event.country}`;
+			const location = await this.getLocation(addressString);
+
+			const isRegistered = await this.getRegistrationStatus(eventId);
+
 			this.setState({
-				isRegistered: result.data.data.isRegistered
+				event,
+				location,
+				loading: false,
+				isRegistered,
+				isCreator: event.creator.id === localStorage.getItem('userId')
 			});
+		} catch (err) {
+			console.lot(err);
 		}
-		this.setState({event, location, loading: false});
 	}
 
 	render() {
@@ -110,9 +131,9 @@ class Event extends Component {
 													precision={2}
 												/>
 												{localStorage.getItem('isAuth') ? (
-													this.state.isRegistered ? (
+													!this.state.isRegistered && !this.state.isCreator ? (
 														<RegisterModal event={this.state.event} />
-													) : (
+													) : this.state.isCreator ? null : (
 														<Button>Registered!</Button>
 													)
 												) : (

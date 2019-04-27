@@ -10,7 +10,8 @@ const {Paragraph} = Typography;
 class EventCard extends Component {
 	state = {
 		isRegistered: false,
-		loading: true
+		loading: true,
+		isCreator: false
 	};
 
 	async componentDidMount() {
@@ -30,7 +31,8 @@ class EventCard extends Component {
 			});
 			this.setState({
 				loading: false,
-				isRegistered: result.data.data.isRegistered
+				isRegistered: result.data.data.isRegistered,
+				isCreator: this.props.event.creator.id === localStorage.getItem('userId')
 			});
 		}
 	}
@@ -53,13 +55,13 @@ class EventCard extends Component {
 				actions={[
 					<Link to={`/event/${event.id}`}>View Event</Link>,
 					localStorage.getItem('isAuth') ? (
-						this.state.isRegistered ? (
+						!this.state.isRegistered && !this.state.isCreator ? (
 							<RegisterModal event={event} />
-						) : (
+						) : this.state.isCreator ? <strong>Your event</strong> : (
 							<Button>Registered!</Button>
 						)
 					) : (
-						<SignupDrawer size="small" text="Login" />
+						<SignupDrawer size="large" text="Login" />
 					)
 				]}>
 				<Card.Meta

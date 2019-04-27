@@ -34,7 +34,7 @@ class SearchResults extends Component {
 		searchResults: [],
 		initLoading: true,
 		loading: false,
-		first: 1,
+		first: 3,
 		skip: 0,
 		queryString: '',
 		more: true
@@ -91,7 +91,7 @@ class SearchResults extends Component {
 		const requestQuery = `{
 			events(query: ${queryString}
 				orderBy: "dateTime_ASC"
-				first: 1
+				first: ${this.state.first}
 				skip: 0) {
 					id
 					title
@@ -119,7 +119,7 @@ class SearchResults extends Component {
 					query: requestQuery
 				}
 			});
-			const skip = this.state.skip + 1;
+			const skip = this.state.skip + this.state.first;
 			this.setState({
 				searchResults: results.data.data.events,
 				loading: false,
@@ -162,7 +162,7 @@ class SearchResults extends Component {
 					query: requestQuery
 				}
 			});
-			const skip = this.state.skip + 1;
+			const skip = this.state.skip + this.state.first;
 			this.setState(prevState => {
 				const searchResults =
 					results.data.data.events.length > 0
