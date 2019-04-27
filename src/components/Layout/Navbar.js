@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {Affix, Icon} from 'antd';
 import SignupDrawer from '../Auth/SignupDrawer';
+import CreateEventModal from '../Event/CreateEventModal';
 import classes from '../styles/Navbar.module.scss';
 
 const navbar = props => (
@@ -15,6 +16,9 @@ const navbar = props => (
 			</h2>
 			{localStorage.getItem('isAuth') ? (
 				<ul>
+					<li>
+						<CreateEventModal />
+					</li>
 					<li>
 						<Link to={`/user/${localStorage.getItem('userId')}`}>Profile</Link>
 					</li>

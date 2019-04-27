@@ -1,4 +1,13 @@
 .main {
-	padding: .5rem;
+	padding: 0.5rem;
 	margin-top: 1rem;
+}
+
+.image {
+	height: 250px;
+	overflow: hidden;
+	& img {
+		height: 100%;
+		object-fit: cover;
+	}
 }

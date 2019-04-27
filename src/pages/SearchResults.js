@@ -36,12 +36,54 @@ class SearchResults extends Component {
 		loading: false,
 		first: 3,
 		skip: 0,
-		queryString: '',
+		queryString: `{
+				dateAfter: "${new Date().toISOString()}"
+				registrationAfter: "${new Date().toISOString()}"
+			}`,
 		more: true
 	};
 
-	componentDidMount() {
-		console.log(this.props);
+	async componentDidMount() {
+		const requestQuery = `{
+			events(query: ${this.state.queryString}
+				orderBy: "dateTime_ASC"
+				first: ${this.state.first}) 
+			{
+				id
+				title
+				description
+				dateTime
+				price
+				address
+				city
+				postCode
+				state
+				country
+				imageUrl
+				creator {
+					id
+					firstName
+					lastName
+				}
+			}
+		}`;
+		try {
+			const results = await axios({
+				method: 'POST',
+				url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
+				data: {
+					query: requestQuery
+				}
+			});
+			const skip = this.state.skip + this.state.first;
+			this.setState({
+				searchResults: results.data.data.events,
+				loading: false,
+				skip
+			});
+		} catch (err) {
+			console.log(err);
+		}
 	}
 
 	onQueryChange = e => {

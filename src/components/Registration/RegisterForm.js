@@ -70,9 +70,14 @@ class RegisterForm extends Component {
 			message.success('Registered successfully!');
 			notification.open({
 				message: `Registered for ${this.props.event.title}`,
-				description: `${<strong>Name</strong>} ${this.props.name}`,
+				description: `${<strong>Name</strong>} ${this.props.name} ${(
+					<p>
+						<strong>Total Price</strong>${this.state.totalPrice}
+					</p>
+				)}`,
 				duration: 0
 			});
+			this.props.onComplete();
 		} catch (err) {
 			message.error('Could not register. Please try later.');
 			console.log(err);

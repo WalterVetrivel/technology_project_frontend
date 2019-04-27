@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Drawer, Tabs, Button, Icon} from 'antd';
+import {Drawer, Tabs, Button, Icon, Row, Col} from 'antd';
 import SignupForm from './SignupForm';
 import LoginForm from './LoginForm';
 const {TabPane} = Tabs;
@@ -41,7 +41,14 @@ class SignupDrawer extends Component {
 								</React.Fragment>
 							}
 							key={1}>
-							<SignupForm {...this.props} onFinish={this.onClose.bind(this)} />
+							<Row type="flex" justify="center">
+								<Col lg={12}>
+									<SignupForm
+										{...this.props}
+										onFinish={this.onClose.bind(this)}
+									/>
+								</Col>
+							</Row>
 						</TabPane>
 						<TabPane
 							tab={
@@ -51,7 +58,14 @@ class SignupDrawer extends Component {
 								</React.Fragment>
 							}
 							key={2}>
-							<LoginForm {...this.props} onFinish={this.onClose.bind(this)} />
+							<Row type="flex" justify="center">
+								<Col lg={12}>
+									<LoginForm
+										{...this.props}
+										onFinish={this.onClose.bind(this)}
+									/>
+								</Col>
+							</Row>
 						</TabPane>
 					</Tabs>
 				</Drawer>

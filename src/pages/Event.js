@@ -4,6 +4,7 @@ import axios from 'axios';
 import {Row, Col, Tabs, Skeleton, Statistic, Button} from 'antd';
 import EventDetails from '../components/Event/EventDetails';
 import RegisterModal from '../components/Registration/RegisterModal';
+import UpdateEventModal from '../components/Event/UpdateEventModal';
 import SignupDrawer from '../components/Auth/SignupDrawer';
 import classes from './styles/Event.module.scss';
 
@@ -108,7 +109,7 @@ class Event extends Component {
 						<Col xs={24} md={20} lg={18}>
 							{!this.state.loading ? (
 								<React.Fragment>
-									<div>
+									<div className={classes.image}>
 										<img
 											alt={this.state.event.title}
 											src={
@@ -133,7 +134,9 @@ class Event extends Component {
 												{localStorage.getItem('isAuth') ? (
 													!this.state.isRegistered && !this.state.isCreator ? (
 														<RegisterModal event={this.state.event} />
-													) : this.state.isCreator ? null : (
+													) : this.state.isCreator ? (
+														<UpdateEventModal event={this.state.event} />
+													) : (
 														<Button>Registered!</Button>
 													)
 												) : (

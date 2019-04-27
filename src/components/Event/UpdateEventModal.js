@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
-import {Elements, StripeProvider} from 'react-stripe-elements';
 import {Modal, Button} from 'antd';
-import CreateEventForm from './CreateEventForm';
+import UpdateEventForm from './UpdateEventForm';
 
-class CreateEventModal extends Component {
+class UpdateEventModal extends Component {
 	state = {
 		visible: false
 	};
@@ -22,25 +21,24 @@ class CreateEventModal extends Component {
 				<Button
 					type="primary"
 					size="large"
-					icon="form"
+					icon="edit"
 					onClick={this.showModal}>
-					Create Event
+					Edit Event
 				</Button>
 				<Modal
-					title={<h3>Create Event</h3>}
+					title={<h3>Edit Event</h3>}
 					visible={this.state.visible}
 					onCancel={this.hideModal}
 					destroyOnClose
 					footer={null}>
-					<StripeProvider apiKey={process.env.REACT_APP_STRIPE_TEST_KEY}>
-						<Elements>
-							<CreateEventForm onFinish={this.hideModal.bind(this)} />
-						</Elements>
-					</StripeProvider>
+					<UpdateEventForm
+						event={this.props.event}
+						onFinish={this.hideModal.bind(this)}
+					/>
 				</Modal>
 			</div>
 		);
 	}
 }
 
-export default CreateEventModal;
+export default UpdateEventModal;

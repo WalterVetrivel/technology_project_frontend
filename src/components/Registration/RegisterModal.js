@@ -63,6 +63,7 @@ class RegisterModal extends Component {
 					title={<h3>Register</h3>}
 					visible={this.state.visible}
 					onCancel={this.hideModal}
+					destroyOnClose
 					footer={null}>
 					<Alert
 						message="Registration Information"
@@ -99,7 +100,7 @@ class RegisterModal extends Component {
 								name={this.state.name}
 								eventId={this.props.event.id}
 								eventTitle={this.props.event.title}
-								onComplete={this.hideModal}
+								onComplete={this.hideModal.bind(this)}
 							/>
 						</Elements>
 					</StripeProvider>
