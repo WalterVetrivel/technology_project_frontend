@@ -20,6 +20,9 @@ const navbar = props => (
 						<CreateEventModal />
 					</li>
 					<li>
+						<Link to="/search">Search</Link>
+					</li>
+					<li>
 						<Link to={`/user/${localStorage.getItem('userId')}`}>Profile</Link>
 					</li>
 					<li>
@@ -30,7 +33,14 @@ const navbar = props => (
 					</li>
 				</ul>
 			) : (
-				<SignupDrawer size="default" text="Signup/Login" {...props} />
+				<ul>
+					<li>
+						<Link to="/search">Search</Link>
+					</li>
+					<li>
+						<SignupDrawer size="default" text="Signup/Login" {...props} />
+					</li>
+				</ul>
 			)}
 		</nav>
 	</Affix>

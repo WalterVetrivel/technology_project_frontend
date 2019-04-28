@@ -1,69 +1,32 @@
 import React, {Component} from 'react';
 import {List, Button, Row, Col} from 'antd';
-import SearchForm from '../components/Search/SearchForm';
-import EventSearchResult from '../components/Search/EventSearchResult';
+import {Link} from 'react-router-dom';
+import UserSearchForm from '../components/Search/UserSearchForm';
 import axios from 'axios';
 import classes from './styles/Search.module.scss';
 
-class SearchResults extends Component {
+class UserSearchResults extends Component {
 	state = {
-		query: '',
+		name: '',
 		location: '',
-		categories: [
-			'All',
-			'Food',
-			'Music',
-			'Religion',
-			'Entertainment',
-			'Movie',
-			'Charity',
-			'Rally',
-			'Education',
-			'Politics',
-			'Social',
-			'Job',
-			'Sale',
-			'Auction',
-			'Fundraiser',
-			'Other'
-		],
-		selectedCategory: 'All',
-		costTypes: ['Free', 'Paid', 'All'],
-		selectedCostType: 'All',
 		searchResults: [],
 		initLoading: true,
 		loading: false,
 		first: 3,
 		skip: 0,
-		queryString: `{
-				dateAfter: "${new Date().toISOString()}"
-				registrationAfter: "${new Date().toISOString()}"
-			}`,
+		queryString: '',
 		more: true
 	};
 
 	async componentDidMount() {
 		const requestQuery = `{
-			events(query: ${this.state.queryString}
-				orderBy: "dateTime_ASC"
-				first: ${this.state.first}) 
+			users(first: ${this.state.first}) 
 			{
 				id
-				title
-				description
-				dateTime
-				price
-				address
-				city
-				postCode
+				firstName
+				lastName
 				state
 				country
-				imageUrl
-				creator {
-					id
-					firstName
-					lastName
-				}
 			}
 		}`;
 		try {
@@ -76,7 +39,7 @@ class SearchResults extends Component {
 			});
 			const skip = this.state.skip + this.state.first;
 			this.setState({
-				searchResults: results.data.data.events,
+				searchResults: results.data.data.users,
 				loading: false,
 				skip
 			});
@@ -85,71 +48,37 @@ class SearchResults extends Component {
 		}
 	}
 
-	onQueryChange = e => {
-		this.setState({query: e.target.value});
+	onNameChange = e => {
+		this.setState({name: e.target.value});
 	};
 
 	onLocationChange = e => {
 		this.setState({location: e.target.value});
 	};
 
-	onCategoryChange = e => {
-		this.setState({selectedCategory: e});
-	};
-
-	onCostTypeChange = e => {
-		this.setState({selectedCostType: e});
-	};
-
 	onSubmit = async e => {
 		e.preventDefault();
 		this.setState({skip: 0, loading: true, initLoading: false, more: true});
-		const search = this.state.query;
+		const name = this.state.name;
 		const location = this.state.location;
-		const category = this.state.selectedCategory;
-		const isFree = this.state.selectedCostType === 'Free';
-		const isPaid = this.state.selectedCostType === 'Paid';
-		const now = new Date().toISOString();
 		let queryString = '{\n';
-		if (search.trim() !== '') {
-			queryString += `search: "${search}"\n`;
+		if (name.trim() !== '') {
+			queryString += `name: "${name}"\n`;
 		}
 		if (location.trim() !== '') {
 			queryString += `location: "${location}"\n`;
 		}
-		if (category.trim() !== '' && category.trim() !== 'All') {
-			queryString += `category: "${category}"\n`;
-		}
-		if (isFree) {
-			queryString += `isFree: true\n`;
-		} else if (isPaid) {
-			queryString += `isPaid: true\n`;
-		}
-		queryString += `dateAfter: "${now}"\n`;
-		queryString += `registrationAfter: "${now}"\n`;
 		queryString += `}`;
 		this.setState({queryString});
 		const requestQuery = `{
-			events(query: ${queryString}
-				orderBy: "dateTime_ASC"
+			users(query: ${queryString}
 				first: ${this.state.first}
 				skip: 0) {
 					id
-					title
-					description
-					dateTime
-					price
-					address
-					city
-					postCode
+					firstName
+					lastName
 					state
 					country
-					imageUrl
-					creator {
-						id
-						firstName
-						lastName
-					}
 				}
 		}`;
 		try {
@@ -162,7 +91,7 @@ class SearchResults extends Component {
 			});
 			const skip = this.state.skip + this.state.first;
 			this.setState({
-				searchResults: results.data.data.events,
+				searchResults: results.data.data.users,
 				loading: false,
 				skip
 			});
@@ -173,26 +102,14 @@ class SearchResults extends Component {
 
 	onLoadMore = async () => {
 		const requestQuery = `{
-			events(query: ${this.state.queryString}
-				orderBy: "dateTime_ASC"
+			users(query: ${this.state.queryString}
 				first: ${this.state.first}
 				skip: ${this.state.skip}) {
 					id
-					title
-					description
-					dateTime
-					price
-					address
-					city
-					postCode
+					firstName
+					lastName
 					state
 					country
-					imageUrl
-					creator {
-						id
-						firstName
-						lastName
-					}
 				}
 		}`;
 		try {
@@ -206,13 +123,13 @@ class SearchResults extends Component {
 			const skip = this.state.skip + this.state.first;
 			this.setState(prevState => {
 				const searchResults =
-					results.data.data.events.length > 0
-						? [...prevState.searchResults, ...results.data.data.events]
+					results.data.data.users.length > 0
+						? [...prevState.searchResults, ...results.data.data.users]
 						: [...prevState.searchResults];
 				return {
 					searchResults: searchResults,
 					loading: false,
-					more: results.data.data.events.length === prevState.first,
+					more: results.data.data.users.length === prevState.first,
 					skip
 				};
 			});
@@ -238,19 +155,12 @@ class SearchResults extends Component {
 			) : null;
 		return (
 			<React.Fragment>
-				{/* <Navbar {...this.props} /> */}
 				<div className={classes.searchForm}>
-					<SearchForm
-						query={this.state.query}
-						onQueryChange={this.onQueryChange.bind(this)}
+					<UserSearchForm
+						name={this.state.name}
+						onNameChange={this.onNameChange.bind(this)}
 						location={this.state.location}
 						onLocationChange={this.onLocationChange.bind(this)}
-						categories={this.state.categories}
-						selectedCategory={this.state.selectedCategory}
-						onCategoryChange={this.onCategoryChange.bind(this)}
-						costTypes={this.state.costTypes}
-						selectedCostType={this.state.selectedCostType}
-						onCostTypeChange={this.onCostTypeChange.bind(this)}
 						onSubmit={this.onSubmit.bind(this)}
 					/>
 				</div>
@@ -262,7 +172,14 @@ class SearchResults extends Component {
 								dataSource={this.state.searchResults}
 								renderItem={item => (
 									<List.Item>
-										<EventSearchResult event={item} />
+										<List.Item.Meta
+											title={
+												<Link to={`/user/${item.id}`}>{`${item.firstName} ${
+													item.lastName
+												}`}</Link>
+											}
+											description={`${item.state}, ${item.country}`}
+										/>
 									</List.Item>
 								)}
 							/>
@@ -274,4 +191,4 @@ class SearchResults extends Component {
 	}
 }
 
-export default SearchResults;
+export default UserSearchResults;

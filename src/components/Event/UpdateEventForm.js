@@ -10,16 +10,19 @@ import {
 	message
 } from 'antd';
 import axios from 'axios';
+import moment from 'moment';
 
 class UpdateEventForm extends Component {
 	componentDidMount() {
 		this.props.form.setFields({
 			title: {value: this.props.event.title},
 			description: {value: this.props.event.description},
-			price: {value: this.props.event.price},
-			dateTime: {value: this.props.event.dateTime},
+			price: {value: Math.round(this.props.event.price / 1.1).toFixed(2)},
+			dateTime: {value: moment(this.props.event.dateTime)},
 			address: {value: this.props.event.address},
-			registrationDeadline: {value: this.props.event.registrationDeadline}
+			registrationDeadline: {
+				value: moment(this.props.event.registrationDeadline)
+			}
 		});
 		console.log(this.props.form);
 	}
@@ -28,15 +31,16 @@ class UpdateEventForm extends Component {
 		e.preventDefault();
 		this.props.form.validateFields(async (err, values) => {
 			if (!err) {
+				console.log(values.price);
 				const requestQuery = `mutation {
 					updateEvent(id: "${this.props.event.id}"
 						data: {
 							title: "${values.title}"
 							description: "${values.description}"
 							price: ${values.price}
-							dateTime: "${values.dateTime}"
+							dateTime: "${new Date(values.dateTime).toISOString()}"
 							address: "${values.address}"
-							registrationDeadline: "${values.registrationDeadline}"
+							registrationDeadline: "${new Date(values.registrationDeadline).toISOString()}"
 						}) {
 							id
 							title
@@ -58,9 +62,9 @@ class UpdateEventForm extends Component {
 							query: requestQuery
 						}
 					});
-					console.log(result);
 					message.success('Event updated successfully!');
 					this.props.onFinish();
+					window.location.reload();
 				} catch (err) {
 					console.log(err);
 				}
@@ -134,7 +138,7 @@ class UpdateEventForm extends Component {
 									type="primary"
 									size="large"
 									icon="check-circle">
-									Create Event
+									Update Event
 								</Button>
 							</Form.Item>
 						</Row>

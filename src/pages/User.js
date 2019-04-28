@@ -16,16 +16,18 @@ class User extends Component {
 		followers: [],
 		following: [],
 		invitations: [],
-		loading: true
+		loading: true,
+		userId: ''
 	};
 
-	async componentDidMount() {
+	initUserProfile = async () => {
 		const userId = this.props.match.params.id;
+		let isCurrentUser = false;
 		if (
 			localStorage.getItem('isAuth') &&
 			localStorage.getItem('userId') === userId
 		) {
-			this.setState({isCurrentUser: true});
+			isCurrentUser = true;
 		}
 		const profileQuery = `{
 			user(id: "${userId}") {
@@ -45,10 +47,29 @@ class User extends Component {
 			});
 			this.setState({
 				profileInfo: profileResult.data.data.user,
-				loading: false
+				loading: false,
+				isCurrentUser,
+				userId
 			});
 		} catch (err) {
 			message.error('Something went wrong');
+		}
+	}
+
+	async componentDidMount() {
+		await this.initUserProfile();
+	}
+
+	static getDerivedStateFromProps(nextProps, prevState) {
+		if (nextProps.match.params.id !== prevState.userId) {
+			return {userId: nextProps.match.params.id};
+		}
+		return null;
+	}
+
+	async componentDidUpdate(prevProps, prevState) {
+		if (prevProps.match.params.id !== this.props.match.params.id) {
+			await this.initUserProfile();
 		}
 	}
 

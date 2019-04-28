@@ -3,7 +3,7 @@ import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom';
 import Home from './pages/Home';
 import User from './pages/User';
 import Event from './pages/Event';
-import SearchResults from './pages/SearchResults';
+import Search from './pages/Search';
 import Logout from './components/Auth/Logout';
 import Footer from './components/Layout/Footer';
 
@@ -13,9 +13,12 @@ class App extends Component {
 			<BrowserRouter>
 				<div className="App">
 					<Switch>
-						<Route path="/user/:id" component={User} />
+						<Route
+							path="/user/:id"
+							render={props => <User key={props.match.params.id} {...props} />}
+						/>
 						<Route path="/event/:id" component={Event} />
-						<Route path="/search" component={SearchResults} />
+						<Route path="/search" component={Search} />
 						<Route path="/logout" component={Logout} />
 						<Redirect from="/home" to="/" />
 						<Route path="/" component={Home} />

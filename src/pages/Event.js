@@ -96,7 +96,7 @@ class Event extends Component {
 				isCreator: event.creator.id === localStorage.getItem('userId')
 			});
 		} catch (err) {
-			console.lot(err);
+			console.log(err);
 		}
 	}
 

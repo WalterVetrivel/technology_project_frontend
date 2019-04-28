@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {List, Button, Icon, Row, Col, Spin} from 'antd';
+import {Link} from 'react-router-dom';
 import axios from 'axios';
 import classes from '../styles/User.module.scss';
 
@@ -138,7 +139,9 @@ class UserRegistrations extends Component {
 									<List.Item.Meta
 										title={
 											<h3>
-												<a>{item.event.title}</a>
+												<Link to={`/event/${item.event.id}`}>
+													{item.event.title}
+												</Link>
 											</h3>
 										}
 										description={
