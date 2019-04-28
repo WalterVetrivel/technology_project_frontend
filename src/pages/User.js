@@ -1,9 +1,12 @@
 import React, {Component} from 'react';
-import {Tabs, Avatar, Row, Col, Button, Skeleton, message} from 'antd';
+import {Tabs, Avatar, Row, Col, Skeleton, message} from 'antd';
 import Navbar from '../components/Layout/Navbar';
 import UserAbout from '../components/User/UserAbout';
 import UserEvents from '../components/User/UserEvents';
 import UserRegistrations from '../components/User/UserRegistrations';
+import FollowUser from '../components/User/FollowUser';
+import Followers from '../components/User/Followers';
+import Following from '../components/User/Following';
 import axios from 'axios';
 import classes from './styles/User.module.scss';
 
@@ -20,7 +23,7 @@ class User extends Component {
 		userId: ''
 	};
 
-	initUserProfile = async () => {
+	async componentDidMount() {
 		const userId = this.props.match.params.id;
 		let isCurrentUser = false;
 		if (
@@ -56,23 +59,6 @@ class User extends Component {
 		}
 	}
 
-	async componentDidMount() {
-		await this.initUserProfile();
-	}
-
-	static getDerivedStateFromProps(nextProps, prevState) {
-		if (nextProps.match.params.id !== prevState.userId) {
-			return {userId: nextProps.match.params.id};
-		}
-		return null;
-	}
-
-	async componentDidUpdate(prevProps, prevState) {
-		if (prevProps.match.params.id !== this.props.match.params.id) {
-			await this.initUserProfile();
-		}
-	}
-
 	render() {
 		return (
 			<React.Fragment>
@@ -88,9 +74,7 @@ class User extends Component {
 										<Avatar size={80} icon="user" />
 										{!this.state.isCurrentUser &&
 										localStorage.getItem('isAuth') ? (
-											<Button ghost type="default" icon="plus">
-												Follow
-											</Button>
+											<FollowUser userId={this.state.userId} />
 										) : null}
 									</div>
 								</Col>
@@ -126,6 +110,16 @@ class User extends Component {
 										/>
 									</Tabs.TabPane>
 								) : null}
+								{this.state.isCurrentUser ? (
+									<Tabs.TabPane key="4" tab="Following">
+										<Following />
+									</Tabs.TabPane>
+								) : null}
+								{this.state.isCurrentUser ? (
+									<Tabs.TabPane key="5" tab="Followers">
+										<Followers />
+									</Tabs.TabPane>
+								) : null}
 							</Tabs>
 						</main>
 					</React.Fragment>
@@ -134,5 +128,4 @@ class User extends Component {
 		);
 	}
 }
-
 export default User;

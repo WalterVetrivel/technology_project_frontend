@@ -21,6 +21,7 @@ class App extends Component {
 						<Route path="/search" component={Search} />
 						<Route path="/logout" component={Logout} />
 						<Redirect from="/home" to="/" />
+						<Redirect from="/index" to="/" />
 						<Route path="/" component={Home} />
 					</Switch>
 					<Footer />

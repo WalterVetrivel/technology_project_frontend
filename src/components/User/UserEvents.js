@@ -115,11 +115,7 @@ class UserEvents extends Component {
 							renderItem={item => (
 								<List.Item>
 									<List.Item.Meta
-										title={
-											<h3>
-												<Link to={`/event/${item.id}`}>{item.title}</Link>
-											</h3>
-										}
+										title={<Link to={`/event/${item.id}`}>{item.title}</Link>}
 										description={
 											<div>
 												<Icon type="calendar" />

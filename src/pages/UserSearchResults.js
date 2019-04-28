@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom';
 import UserSearchForm from '../components/Search/UserSearchForm';
 import axios from 'axios';
 import classes from './styles/Search.module.scss';
+import FollowUser from '../components/User/FollowUser';
 
 class UserSearchResults extends Component {
 	state = {
@@ -171,7 +172,7 @@ class UserSearchResults extends Component {
 								loadMore={loadMore}
 								dataSource={this.state.searchResults}
 								renderItem={item => (
-									<List.Item>
+									<List.Item actions={[<FollowUser userId={item.id} />]}>
 										<List.Item.Meta
 											title={
 												<Link to={`/user/${item.id}`}>{`${item.firstName} ${
