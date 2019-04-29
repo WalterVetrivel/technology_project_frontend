@@ -40,6 +40,29 @@ class Home extends Component {
 		}`;
 	};
 
+	getFollowingEvents = async () => {
+		const now = new Date().toISOString();
+		try {
+			const results = await axios({
+				method: 'POST',
+				url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				},
+				data: {
+					query: `{
+						followingEvents(dateAfter: ${now} registrationAfter: ${now} first: 10) ${this.getSelectionSet()}
+					}`
+				}
+			});
+			return results.data.data.followingEvents;
+		} catch (err) {
+			console.log(err);
+			this.setState({isError: true});
+			return [];
+		}
+	};
+
 	getSelectionSet = () => {
 		return `{
 			id
@@ -87,8 +110,13 @@ class Home extends Component {
 
 	async componentDidMount() {
 		const localEvents = await this.getLocalEvents();
+		let followingEvents = [];
+		if (localStorage.getItem('isAuth')) {
+			followingEvents = await this.getFollowingEvents();
+		}
 		this.setState({
 			localEvents,
+			followingEvents,
 			loading: false
 		});
 	}
@@ -154,6 +182,12 @@ class Home extends Component {
 				<main className={classes.main}>
 					{this.renderDivider('Events near you')}
 					{this.renderEventList(this.state.localEvents)}
+					{localStorage.getItem('isAuth') ? (
+						<React.Fragment>
+							{this.renderDivider('Events by people you are following')}
+							{this.renderEventList(this.state.followingEvents)}
+						</React.Fragment>
+					) : null}
 				</main>
 			</React.Fragment>
 		);

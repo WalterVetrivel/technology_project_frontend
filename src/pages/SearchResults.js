@@ -238,7 +238,6 @@ class SearchResults extends Component {
 			) : null;
 		return (
 			<React.Fragment>
-				{/* <Navbar {...this.props} /> */}
 				<div className={classes.searchForm}>
 					<SearchForm
 						query={this.state.query}
