@@ -51,7 +51,7 @@ class Home extends Component {
 				},
 				data: {
 					query: `{
-						followingEvents(dateAfter: ${now} registrationAfter: ${now} first: 10) ${this.getSelectionSet()}
+						followingEvents(dateAfter: "${now}" registrationAfter: "${now}" first: 10) ${this.getSelectionSet()}
 					}`
 				}
 			});

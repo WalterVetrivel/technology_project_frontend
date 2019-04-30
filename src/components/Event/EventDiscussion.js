@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {List, Form, Button, Input, Row, Skeleton, message} from 'antd';
+import {List, Form, Button, Input, Row, Skeleton, message, Col} from 'antd';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 
@@ -25,12 +25,12 @@ class EventDiscussion extends Component {
 	};
 
 	async componentDidMount() {
-		const queryString = `eventId: ${this.props.eventId} first: ${
+		const queryString = `eventId: "${this.props.eventId}" first: ${
 			this.state.first
 		} skip: ${this.state.skip}`;
 		this.setState({queryString});
 		try {
-			const results = axios({
+			const results = await axios({
 				method: 'POST',
 				url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
 				data: {
@@ -40,6 +40,7 @@ class EventDiscussion extends Component {
 				}
 			});
 			const skip = this.state.skip + this.state.first;
+			console.log(results);
 			this.setState({
 				posts: results.data.data.eventPosts,
 				initLoading: false,
@@ -87,7 +88,7 @@ class EventDiscussion extends Component {
 		e.preventDefault();
 		if (this.state.currentPost.trim() !== '') {
 			try {
-				const result = axios({
+				const result = await axios({
 					method: 'POST',
 					url: process.env.REACT_APP_GRAPHQL_ENDPOINT,
 					headers: {
@@ -96,12 +97,13 @@ class EventDiscussion extends Component {
 					data: {
 						query: `mutation {
 							createPost(data: {
-								event: ${this.props.eventId}
-								content: ${this.state.currentPost}
+								event: "${this.props.eventId}"
+								content: "${this.state.currentPost}"
 							}) ${this.state.selectionSet}
 						}`
 					}
 				});
+				console.log(result);
 				this.setState(prevState => {
 					const posts = [...prevState.posts, result.data.data.post];
 					return {
@@ -129,7 +131,7 @@ class EventDiscussion extends Component {
 					<Button onClick={this.onLoadMore}>Load more</Button>
 				</div>
 			) : !this.state.more ? (
-				<p className={classes.center}>No more.</p>
+				<p>No more.</p>
 			) : null;
 		return (
 			<React.Fragment>
@@ -143,8 +145,8 @@ class EventDiscussion extends Component {
 								renderItem={item => (
 									<List.Item>
 										<List.Item.Meta
-											title={item.content}
-											description={
+											description={item.content}
+											title={
 												<Link to={`/user/${item.author.id}`}>{`${
 													item.author.firstName
 												} ${item.author.lastName}`}</Link>
@@ -176,7 +178,7 @@ class EventDiscussion extends Component {
 										type="primary"
 										size="large"
 										icon="check-circle"
-										disabled={this.state.currentPost.trim() !== ''}>
+										disabled={this.state.currentPost.trim() === ''}>
 										Enter post
 									</Button>
 								</Form.Item>

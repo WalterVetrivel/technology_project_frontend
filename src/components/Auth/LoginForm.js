@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-import {Form, Button, Input, Row, message} from 'antd';
+import {Form, Button, Input, Row, message, Spin} from 'antd';
 import axios from 'axios';
 
 class LoginForm extends Component {
 	state = {
-		loading: '',
-		error: ''
+		loading: false,
+		error: false
 	};
 
 	onSubmit = async e => {
@@ -64,7 +64,9 @@ class LoginForm extends Component {
 	render() {
 		const {getFieldDecorator} = this.props.form;
 
-		return (
+		return this.state.loading ? (
+			<Spin />
+		) : (
 			<React.Fragment>
 				<h1>Login</h1>
 				<Form onSubmit={this.onSubmit}>

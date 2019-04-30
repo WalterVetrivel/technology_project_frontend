@@ -32,7 +32,8 @@ class EventCard extends Component {
 			this.setState({
 				loading: false,
 				isRegistered: result.data.data.isRegistered,
-				isCreator: this.props.event.creator.id === localStorage.getItem('userId')
+				isCreator:
+					this.props.event.creator.id === localStorage.getItem('userId')
 			});
 		}
 	}
@@ -57,7 +58,9 @@ class EventCard extends Component {
 					localStorage.getItem('isAuth') ? (
 						!this.state.isRegistered && !this.state.isCreator ? (
 							<RegisterModal event={event} />
-						) : this.state.isCreator ? <strong>Your event</strong> : (
+						) : this.state.isCreator ? (
+							<strong>Your event</strong>
+						) : (
 							<Button>Registered!</Button>
 						)
 					) : (
@@ -77,7 +80,9 @@ class EventCard extends Component {
 						<Paragraph>
 							by{' '}
 							<strong>
-								{event.creator.firstName + ' ' + event.creator.lastName}
+								<Link to={`/user/${event.creator.id}`}>
+									{event.creator.firstName + ' ' + event.creator.lastName}
+								</Link>
 							</strong>
 						</Paragraph>
 					}

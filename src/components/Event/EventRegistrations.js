@@ -2,24 +2,23 @@ import React, {Component} from 'react';
 import {List, Button, Icon, Row, Col, Spin} from 'antd';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
-import classes from '../styles/User.module.scss';
 
-class UserRegistrations extends Component {
+class EventRegistrations extends Component {
 	state = {
 		registrations: [],
-		loading: false,
 		initLoading: true,
-		first: 3,
-		skip: 0,
-		more: true
+		loading: false,
+		first: 5,
+		skip: 0
 	};
 
 	async componentDidMount() {
 		if (localStorage.getItem('isAuth')) {
 			const requestQuery = `{
-				userRegistrations(first: ${this.state.first}
+				eventRegistrations(first: ${this.state.first}
 					skip: ${this.state.skip}
-					orderBy: "createdAt_DESC") {
+					orderBy: "createdAt_DESC"
+					event: "${this.props.eventId}") {
 						id
 						user {
 							id
@@ -48,7 +47,7 @@ class UserRegistrations extends Component {
 				});
 				const skip = this.state.skip + 2;
 				this.setState({
-					registrations: results.data.data.userRegistrations,
+					registrations: results.data.data.eventRegistrations,
 					initLoading: false,
 					skip
 				});
@@ -60,9 +59,10 @@ class UserRegistrations extends Component {
 
 	onLoadMore = async () => {
 		const requestQuery = `{
-				userRegistrations(first: ${this.state.first}
+				eventRegistrations(first: ${this.state.first}
 					skip: ${this.state.skip}
-					orderBy: "createdAt_DESC") {
+					orderBy: "createdAt_DESC"
+					event: "${this.props.eventId}") {
 						id
 						user {
 							id
@@ -92,16 +92,16 @@ class UserRegistrations extends Component {
 			const skip = this.state.skip + 2;
 			this.setState(prevState => {
 				const registrations =
-					results.data.data.userRegistrations.length > 0
+					results.data.data.eventRegistrations.length > 0
 						? [
 								...prevState.registrations,
-								...results.data.data.userRegistrations
+								...results.data.data.eventRegistrations
 						  ]
 						: [...prevState.registrations];
 				return {
 					registrations: registrations,
 					loading: false,
-					more: results.data.data.userRegistrations.length === prevState.first,
+					more: results.data.data.eventRegistrations.length === prevState.first,
 					skip
 				};
 			});
@@ -123,7 +123,7 @@ class UserRegistrations extends Component {
 					<Button onClick={this.onLoadMore}>Load more</Button>
 				</div>
 			) : !this.state.more ? (
-				<p className={classes.center}>No more.</p>
+				<p>No more.</p>
 			) : null;
 
 		return (
@@ -139,23 +139,24 @@ class UserRegistrations extends Component {
 									<List.Item.Meta
 										title={
 											<h3>
-												<Link to={`/event/${item.event.id}`}>
-													{item.event.title}
+												<Link to={`/event/${item.user.id}`}>
+													{item.user.firstName + ' ' + item.user.lastName}
 												</Link>
 											</h3>
 										}
 										description={
 											<div>
-												<Icon type="calendar" />
-												&nbsp;
-												{new Date(item.event.dateTime).toLocaleDateString()}
 												<p>
-													<strong>Registration ID:</strong> {item.id}
+													<strong>Registration ID: </strong>
+													{item.id}
 												</p>
 												<p>
-													<strong>You paid: </strong>$
-													{(item.totalPrice / 100).toFixed(2)} for{' '}
-													{item.guestCount} ticket(s).
+													<strong>Total price: </strong>$
+													{(item.totalPrice / 100).toFixed(2)}
+												</p>
+												<p>
+													<strong>Guest count: </strong>
+													{item.guestCount}
 												</p>
 											</div>
 										}
@@ -170,4 +171,4 @@ class UserRegistrations extends Component {
 	}
 }
 
-export default UserRegistrations;
+export default EventRegistrations;

@@ -7,7 +7,8 @@ import {
 	InputNumber,
 	message,
 	notification,
-	Statistic
+	Statistic,
+	Spin
 } from 'antd';
 import {CardElement, injectStripe} from 'react-stripe-elements';
 import axios from 'axios';
@@ -15,7 +16,8 @@ import axios from 'axios';
 class RegisterForm extends Component {
 	state = {
 		guestCount: 1,
-		totalPrice: 0
+		totalPrice: 0,
+		loading: false
 	};
 
 	componentDidMount() {
@@ -32,7 +34,7 @@ class RegisterForm extends Component {
 
 	onSubmit = async e => {
 		e.preventDefault();
-		alert('submitted');
+		this.setState({loading: true});
 		const token = await this.props.stripe.createToken({
 			name: this.props.name
 		});
@@ -66,26 +68,25 @@ class RegisterForm extends Component {
 					query: requestQuery
 				}
 			});
-			console.log(result.data);
 			message.success('Registered successfully!');
 			notification.open({
-				message: `Registered for ${this.props.event.title}`,
-				description: `${<strong>Name</strong>} ${this.props.name} ${(
-					<p>
-						<strong>Total Price</strong>${this.state.totalPrice}
-					</p>
-				)}`,
+				message: `Registered for ${this.props.eventTitle}`,
+				description: `${this.props.name} $${this.state.totalPrice}`,
 				duration: 0
 			});
+			this.setState({loading: false});
 			this.props.onComplete();
 		} catch (err) {
 			message.error('Could not register. Please try later.');
 			console.log(err);
+			this.setState({loading: false});
 		}
 	};
 
 	render() {
-		return (
+		return this.state.loading ? (
+			<Spin />
+		) : (
 			<Row type="flex" justify="center">
 				<Col span={20}>
 					<Row type="flex" justify="center">

@@ -5,6 +5,8 @@ import {Row, Col, Tabs, Skeleton, Statistic, Button} from 'antd';
 import EventDetails from '../components/Event/EventDetails';
 import RegisterModal from '../components/Registration/RegisterModal';
 import UpdateEventModal from '../components/Event/UpdateEventModal';
+import EventDiscussion from '../components/Event/EventDiscussion';
+import EventRegistrations from '../components/Event/EventRegistrations';
 import SignupDrawer from '../components/Auth/SignupDrawer';
 import classes from './styles/Event.module.scss';
 
@@ -153,8 +155,13 @@ class Event extends Component {
 											/>
 										</Tabs.TabPane>
 										<Tabs.TabPane tab="Discussion" key="2">
-											<p>No posts yet.</p>
+											<EventDiscussion eventId={this.state.event.id} />
 										</Tabs.TabPane>
+										{this.state.isCreator ? (
+											<Tabs.TabPane tab="Registrations" key="3">
+												<EventRegistrations eventId={this.state.event.id} />
+											</Tabs.TabPane>
+										) : null}
 									</Tabs>
 								</React.Fragment>
 							) : (
